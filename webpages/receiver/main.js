@@ -31,8 +31,8 @@ let init = async () => {
 let createAnswer = async (offer) => {
 
     peerConnection.onicecandidate = async (event) => {
-        //Event that fires off when a new answer ICE candidate is created
-        if(event.candidate){
+
+      if(event.candidate){
             console.log('Adding answer candidate...:', event.candidate)
         }
     };
@@ -52,9 +52,9 @@ let createAnswer = async (offer) => {
     await peerConnection.setLocalDescription({type: answer.type, sdp: answer.sdp}); 
 
 
-    // Start collecting stats every second
+    // per la raccolta dati
     let statsInterval = setInterval(printStats, 1000);
-    // Stop collecting stats and download CSV after 20 seconds
+
     setTimeout(() => {
         clearInterval(statsInterval);
         downloadCsv();

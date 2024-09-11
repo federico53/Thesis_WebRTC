@@ -102,9 +102,6 @@ mean_receiver_data_per_second = mean_receiver_data_per_second.dropna(subset=['to
 
 plt.figure(figsize=(15, 10))
 
-# # Riallineare i dati per avere lo stesso indice
-# aligned_data = mean_receiver_data_per_second[['framesPerSecond']].join(mean_cpu_data_per_second[['CPU Percent']], how='inner')
-
 # Dual-Axis Line Chart: Frames Per Second vs. CPU Percent
 plt.subplot(2, 2, 1)
 
@@ -152,7 +149,7 @@ plt.legend()
 plt.grid(True)
 
 
-# 6. Decode Time e Processing Delay
+# Decode Time e Processing Delay
 
 plt.subplot(2, 2, 4)
 plt.bar(mean_receiver_data_per_second.index, mean_receiver_data_per_second['totalProcessingDelay'], label='Total Processing Delay')
@@ -164,6 +161,7 @@ average_decode_percent = mean_receiver_data_per_second['decodePercent'].mean()
 
 # Aggiungere una annotazione per la media della percentuale di overhead
 plt.annotate(f'Avg Decode Percent: {average_decode_percent:.2f}%', xy=(0.5, 0.95), xycoords='axes fraction', fontsize=12, color='green')
+print(f'Average Decode Percent: {average_decode_percent:.2f}%')
 
 plt.title('Mean Decode Time and Processing Delay per Second')
 plt.xlabel('Secondi')
@@ -190,6 +188,7 @@ average_overhead_percent = mean_receiver_data_per_second['headerOverheadPercent'
 
 # Aggiungere una annotazione per la media della percentuale di overhead
 plt.annotate(f'Avg Header Overhead: {average_overhead_percent:.2f}%', xy=(0.5, 0.95), xycoords='axes fraction', fontsize=12, color='green')
+print(f'Average Header Overhead: {average_overhead_percent:.2f}%')
 
 plt.title('Comparison of Header Bytes vs Total Bytes Received')
 plt.xlabel('Secondi')
@@ -209,6 +208,7 @@ average_retransmit_percent = mean_receiver_data_per_second['retransmitPercent'].
 
 # Aggiungere una annotazione per la media della percentuale di pacchetti ritrasmessi
 plt.annotate(f'Avg Retransmit Percent: {average_retransmit_percent:.2f}%', xy=(0.5, 0.95), xycoords='axes fraction', fontsize=12, color='green')
+print(f'Average Retransmit Percent: {average_retransmit_percent:.2f}%')
 
 plt.title('Comparison of Total Packets vs Retransmitted Packets')
 plt.xlabel('Secondi')
@@ -233,139 +233,11 @@ plt.grid(True)
 
 average_bitrate = mean_receiver_data_per_second['bitsPerSecond'].mean()
 plt.annotate(f'Avg Bitrate: {average_bitrate:.2f} bit/s', xy=(0.5, 0.95), xycoords='axes fraction', fontsize=12, color='green')
+print(f'Average Bitrate: {average_bitrate:.2f} bit/s')
 
 plt.tight_layout()
 plt.show()
 
-# # Jitter e Ritardi di Buffer
-
-# plt.figure(figsize=(15, 10))
-# plt.plot(mean_receiver_data_per_second.index, mean_receiver_data_per_second['jitter'], marker='o', color='blue', label='Jitter')
-# plt.plot(mean_receiver_data_per_second.index, mean_receiver_data_per_second['totalInterFrameDelay'], marker='o', color='orange', label='Total Inter-Frame Delay')
-# plt.title('Mean Jitter and Total Inter-Frame Delay per Second')
-# plt.xlabel('Secondi')
-# plt.ylabel('Delay (s)')
-# plt.legend()
-# plt.grid(True)
-
-# plt.tight_layout()
-# plt.show()
-
-# ------------------------ DA ELIMINARE -------------------------------
-
-# # Jitter Buffer Delay over time nella media aggregata
-# plt.subplot(2, 2, 3)
-# plt.plot(mean_receiver_data_per_second.index, mean_receiver_data_per_second['jitterBufferDelay'], marker='o', color='blue')
-# plt.plot(mean_receiver_data_per_second.index, mean_receiver_data_per_second['jitterBufferTargetDelay'], marker='o', color='green')
-# plt.title('Mean Jitter Buffer Delay & Target per Second')
-# plt.xlabel('Secondi')
-# plt.ylabel('Jitter Buffer Delay (s)')
-# plt.grid(True)
-
-# # Scatter plot per la relazione tra jitterBufferDelay e jitter nella media aggregata
-# plt.subplot(2, 2, 4)
-# plt.scatter(mean_receiver_data_per_second['jitterBufferDelay'], mean_receiver_data_per_second['jitter'], color='red')
-# plt.title('Mean Correlation between Jitter Buffer Delay and Jitter')
-# plt.xlabel('Jitter Buffer Delay (s)')
-# plt.ylabel('Jitter')
-# plt.grid(True)
-
-# plt.tight_layout()
-# plt.show()
-
-
-# # 4. Inter Frame Delay e Variabilità
-# plt.subplot(2, 2, 2)
-# plt.plot(mean_receiver_data_per_second.index, mean_receiver_data_per_second['totalInterFrameDelay'], marker='o', color='blue', label='Total Inter-Frame Delay')
-# plt.plot(mean_receiver_data_per_second.index, mean_receiver_data_per_second['totalSquaredInterFrameDelay'], marker='o', color='orange', label='Total Squared Inter-Frame Delay')
-# plt.title('Mean Inter-Frame Delay and Variability per Second')
-# plt.xlabel('Secondi')
-# plt.ylabel('Delay (s)')
-# plt.legend()
-# plt.grid(True)
-
-
-# # 9. Quantization Parameter (QP)
-# plt.subplot(2, 2, 4)
-# plt.plot(mean_receiver_data_per_second.index, mean_receiver_data_per_second['qpSum'], marker='o', color='blue', label='QP Sum')
-# plt.title('Mean Quantization Parameter (QP) per Second')
-# plt.xlabel('Secondi')
-# plt.ylabel('QP Sum')
-# plt.legend()
-# plt.grid(True)
-
-
-
-# # 1. **Bubble Chart: Bytes Received vs. Frames Per Second (con dimensione della bolla rappresentante il Jitter Buffer Delay)**
-# plt.figure(figsize=(10, 6))
-
-# # Moltiplica il jitterBufferDelay per un fattore per amplificare la dimensione delle bolle
-# scaling_factor = 100  # Modifica questo valore per adattare la scala delle bolle
-# sizes = mean_receiver_data_per_second['jitterBufferDelay'].fillna(0) * scaling_factor
-
-# # Assicurati che le dimensioni siano almeno un valore minimo per migliorare la visibilità
-# sizes = np.clip(sizes, 10, 500)
-
-# plt.scatter(
-#     mean_receiver_data_per_second['bytesReceived'],
-#     mean_receiver_data_per_second['framesPerSecond'],
-#     s=sizes, 
-#     alpha=0.5,
-#     c=mean_receiver_data_per_second['jitterBufferDelay'], 
-#     cmap='viridis'
-# )
-# plt.colorbar(label='Jitter Buffer Delay')
-# plt.xlabel('Bytes Received')
-# plt.ylabel('Frames Per Second')
-# plt.title('Bytes Received vs. Frames Per Second with Jitter Buffer Delay as Bubble Size')
-# plt.grid(True)
-# plt.show()
-
-
-
-
-# # 5. **Bubble Chart: Packets Received vs. Retransmitted Packets Received (con dimensione della bolla rappresentante il NACK Count)**
-# plt.figure(figsize=(10, 6))
-# plt.scatter(
-#     mean_receiver_data_per_second['packetsReceived'],
-#     mean_receiver_data_per_second['retransmittedPacketsReceived'],
-#     s=mean_receiver_data_per_second['nackCount'] * 10, 
-#     alpha=0.5,
-#     c=mean_receiver_data_per_second['nackCount'],
-#     cmap='plasma'
-# )
-# plt.colorbar(label='NACK Count')
-# plt.xlabel('Packets Received')
-# plt.ylabel('Retransmitted Packets Received')
-# plt.title('Packets Received vs. Retransmitted Packets Received with NACK Count as Bubble Size')
-# plt.grid(True)
-# plt.show()
-
-# ------------------------ NON DA ELIMINARE -------------------------------
-
-# # Dual-Axis Line Chart: Total Inter-Frame Delay vs. Jitter
-# plt.figure(figsize=(12, 6))
-
-
-# # Primo asse y per Total Inter-Frame Delay
-# ax1 = plt.gca()
-# ax1.plot(mean_receiver_data_per_second.index, mean_receiver_data_per_second['totalInterFrameDelay_diff'], color='b', label='Total Inter-Frame Delay')
-# ax1.set_xlabel('Time (s)')
-# ax1.set_ylabel('Total Inter-Frame Delay (diff)', color='b')
-# ax1.tick_params(axis='y', labelcolor='b')
-
-# # Secondo asse y per Jitter
-# ax2 = ax1.twinx()
-# ax2.plot(mean_receiver_data_per_second.index, mean_receiver_data_per_second['jitter'], color='r', label='jitter')
-# ax2.set_ylabel('Jitter', color='r')
-# ax2.tick_params(axis='y', labelcolor='r')
-
-# # Aggiungi legende e titolo
-# ax1.legend(loc='upper left')
-# ax2.legend(loc='upper center')
-# plt.title('Total Inter-Frame Delay (diff) and Jitter Over Time')
-# plt.grid(True)
-# plt.show()
 
 # # Correlation Matrix
 # plt.figure(figsize=(12, 8))

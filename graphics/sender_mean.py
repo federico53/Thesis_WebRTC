@@ -91,7 +91,7 @@ for i, metric in enumerate(sender_metrics_to_plot, 1):
     plt.grid(True)
 
 
-# Encode Time e Total Packet Send Delay
+# Total Encode Time e Total Packet Send Delay
 
 plt.subplot(2, 2, 3)
 plt.plot(mean_sender_data_per_second.index, mean_sender_data_per_second['totalEncodeTime'], marker='o', color='blue', label='Total Encode Time')
@@ -127,11 +127,6 @@ plt.ylabel('Huge Frames Sent')
 plt.title('Total Packet Send Delay vs. Huge Frames Sent')
 plt.grid(True)
 
-
-# Analisi della Correlazione
-correlation = mean_sender_data_per_second[['totalPacketSendDelay', 'hugeFramesSent']].corr().iloc[0, 1]
-print(f'Correlazione tra Total Packet Send Delay e Huge Frames Sent: {correlation:.2f}')
-
 # calcolare il ritardo medio di invio dei pacchetti
 average_packet_send_delay = mean_sender_data_per_second['totalPacketSendDelay'].max()/40
 print(f'Average Total Packet Send Delay: {average_packet_send_delay:.2f} seconds')
@@ -155,6 +150,7 @@ average_overhead_percent = mean_sender_data_per_second['headerOverheadPercent'].
 
 # Aggiungere una annotazione per la media della percentuale di overhead
 plt.annotate(f'Avg Header Overhead: {average_overhead_percent:.2f}%', xy=(0.5, 0.95), xycoords='axes fraction', fontsize=12, color='green')
+print(f'Average Header Overhead: {average_overhead_percent:.2f}%')
 
 plt.title('Comparison of Header Bytes vs Total Bytes Sent')
 plt.xlabel('Secondi')
@@ -175,6 +171,7 @@ average_retransmit_percent = mean_sender_data_per_second['retransmitPercent'].me
 
 # Aggiungere una annotazione per la media della percentuale di pacchetti ritrasmessi
 plt.annotate(f'Avg Retransmit Percent: {average_retransmit_percent:.2f}%', xy=(0.5, 0.95), xycoords='axes fraction', fontsize=12, color='green')
+print(f'Average Retransmit Percent: {average_retransmit_percent:.2f}%')
 
 plt.title('Comparison of Total Packets vs Retransmitted Packets')
 plt.xlabel('Secondi')
@@ -208,9 +205,6 @@ ax2.legend(loc='upper right')
 plt.title('Frames Per Second and CPU Percent Over Time')
 plt.grid(True)
 
-# plt.tight_layout()
-# plt.show()
-
 # Calcolare la velocità in bit/s
 mean_sender_data_per_second['bitsPerSecond'] = mean_sender_data_per_second['bytesSent'].diff() * 8
 mean_sender_data_per_second = mean_sender_data_per_second.dropna(subset=['bitsPerSecond'])
@@ -225,70 +219,11 @@ plt.grid(True)
 
 average_bitrate = mean_sender_data_per_second['bitsPerSecond'].mean()
 plt.annotate(f'Avg Bitrate: {average_bitrate:.2f} bit/s', xy=(0.5, 0.95), xycoords='axes fraction', fontsize=12, color='green')
+print(f'Average Bitrate: {average_bitrate:.2f} bit/s')
 
 plt.tight_layout()
 plt.show()
 
-# ------------------------ DA ELIMINARE -------------------------------
-
-# # 1. **Bubble Chart: Target Bitrate vs. Frames Per Second (con dimensione della bolla rappresentante il QP Sum)**
-# plt.figure(figsize=(10, 6))
-# plt.scatter(
-#     mean_sender_data_per_second['targetBitrate'], 
-#     mean_sender_data_per_second['framesPerSecond'], 
-#     s=mean_sender_data_per_second['qpSum'] / 10, 
-#     alpha=0.5, 
-#     c=mean_sender_data_per_second['qpSum'], 
-#     cmap='viridis'
-# )
-# plt.colorbar(label='QP Sum')
-# plt.xlabel('Target Bitrate')
-# plt.ylabel('Frames Per Second')
-# plt.title('Target Bitrate vs. Frames Per Second with QP Sum as Bubble Size')
-# plt.grid(True)
-# plt.show()
-
-# # # 2. **Bubble Chart: Frames Sent vs. Retransmitted Packets Sent (con dimensione della bolla rappresentante il NACK Count)**
-# # plt.figure(figsize=(10, 6))
-# # plt.scatter(
-# #     mean_sender_data_per_second['framesSent'], 
-# #     mean_sender_data_per_second['retransmittedPacketsSent'], 
-# #     s=mean_sender_data_per_second['nackCount'] * 10, 
-# #     alpha=0.5, 
-# #     c=mean_sender_data_per_second['nackCount'], 
-# #     cmap='plasma'
-# # )
-# # plt.colorbar(label='NACK Count')
-# # plt.xlabel('Frames Sent')
-# # plt.ylabel('Retransmitted Packets Sent')
-# # plt.title('Frames Sent vs. Retransmitted Packets Sent with NACK Count as Bubble Size')
-# # plt.grid(True)
-# # plt.show()
-
-# # 3. **Dual-Axis Line Chart: Bytes Sent vs. Total Packet Send Delay**
-# plt.figure(figsize=(12, 6))
-
-# # Primo asse y per Bytes Sent
-# ax1 = plt.gca()
-# ax1.plot(mean_sender_data_per_second.index, mean_sender_data_per_second['bytesSent'], color='b', label='Bytes Sent')
-# ax1.set_xlabel('Time (s)')
-# ax1.set_ylabel('Bytes Sent', color='b')
-# ax1.tick_params(axis='y', labelcolor='b')
-
-# # Secondo asse y per Total Packet Send Delay
-# ax2 = ax1.twinx()
-# ax2.plot(mean_sender_data_per_second.index, mean_sender_data_per_second['totalPacketSendDelay'], color='r', label='Total Packet Send Delay')
-# ax2.set_ylabel('Total Packet Send Delay (s)', color='r')
-# ax2.tick_params(axis='y', labelcolor='r')
-
-# # Aggiungi legende e titolo
-# ax1.legend(loc='upper center')
-# ax2.legend(loc='upper left')
-# plt.title('Bytes Sent and Total Packet Send Delay Over Time')
-# plt.grid(True)
-# plt.show()
-
-# ------------------------ NON DA ELIMINARE -------------------------------
 
 # # Correlation Matrix
 # plt.figure(figsize=(10, 6))

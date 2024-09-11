@@ -37,7 +37,14 @@ async def handler(websocket, path):
         print('Un client si è disconnesso.')
 
 async def main():
-    server = await websockets.serve(handler, "192.168.56.212", 8080)
+    # Imposta il timeout per il ping keepalive a 60 secondi
+    server = await websockets.serve(
+        handler,
+        "192.168.56.212",
+        8080,
+        ping_interval=60,  # Intervallo di 60 secondi tra i ping
+        ping_timeout=60    # Timeout di 60 secondi per il ping
+    )
     print('Server WebSocket in ascolto su ws://192.168.56.212:8080')
     await server.wait_closed()
 

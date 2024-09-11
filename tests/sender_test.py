@@ -79,9 +79,6 @@ async def start_test(playwright, test_number):
     try:
         sender_page = await context.new_page()
         
-        # Aggiungi un listener per i messaggi della console
-        # sender_page.on("console", lambda msg: print(f"Console message: {msg.text}"))
-
         print("Apro la pagina del sender...")
         await sender_page.goto('http://192.168.56.212:8000/sender/index.html')
 
@@ -98,13 +95,10 @@ async def start_test(playwright, test_number):
         file_path = f'./downloads/cpu_usage/cpu_usage_test_sender_{test_number}.csv'
         cpu_monitor_task = asyncio.create_task(monitor_cpu_usage(pid, file_path, duration=40))
 
-        # await sender_page.screenshot(path=f'.downloads/screenshot{test_number}_1.png')
 
         print("Clicco sul pulsante 'Connetti'...")
         await sender_page.click('#connect')
 
-        # Cattura uno screenshot della pagina
-        # await sender_page.screenshot(path=f'.downloads/screenshot{test_number}_2.png')
 
         # Gestisci il download del sender
         sender_download = await sender_page.wait_for_event('download')

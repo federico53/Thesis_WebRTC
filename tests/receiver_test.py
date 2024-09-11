@@ -73,13 +73,8 @@ async def receiver_test(playwright, test_id):
     try:
         receiver_page = await context.new_page()
 
-        # Aggiungi un listener per i messaggi della console
-        # receiver_page.on("console", lambda msg: print(f"Console message: {msg.text}"))
-
         print('Apro la pagina del receiver...')
         await receiver_page.goto('http://192.168.56.212:8000/receiver/index.html')
-
-        # await receiver_page.screenshot(path=f'./downloads/screenshot{test_id + 1}_1.png')
 
         # Alla fine dell'operazione, invia il segnale al WebSocket server
         await notify_sender()
@@ -92,9 +87,6 @@ async def receiver_test(playwright, test_id):
             print(f"Chrome PID: {pid}")
         else:
             print("Unable to find Chrome PID.")
-
-        # Cattura uno screenshot della pagina
-        # await receiver_page.screenshot(path=f'.downloads/screenshot{test_id + 1}_2.png')
 
         # Avvia il monitoraggio della CPU in parallelo
         print("Avvio il monitoraggio della CPU...")
@@ -110,7 +102,7 @@ async def receiver_test(playwright, test_id):
         # Aspetta che il monitoraggio della CPU sia completato
         await cpu_monitor_task
 
-        # Attendere qualche secondo per garantire che il sender inizi il test (non so se sia necessario)
+        # Attendere qualche secondo per garantire che il sender inizi il test
         await asyncio.sleep(2)
 
     except Exception as e:

@@ -47,7 +47,7 @@ let createOffer = async () => {
     console.log('Creazione offerta...');
 
     peerConnection.onicecandidate = async (event) => {
-        //Event that fires off when a new offer ICE candidate is created
+
         if(event.candidate){
             console.log(JSON.stringify(peerConnection.localDescription));
         }
@@ -72,9 +72,8 @@ let addAnswer = async (answer) => {
         peerConnection.setRemoteDescription(answer);
     }
 
-    // Start collecting stats every second
+    // per la raccolta dati
     let statsInterval = setInterval(printStats, 1000);
-    // Stop collecting stats and download CSV after 20 seconds
     setTimeout(() => {
         clearInterval(statsInterval);
         downloadCsv();
