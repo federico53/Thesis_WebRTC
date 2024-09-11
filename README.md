@@ -21,9 +21,3 @@ Se si volessero testare i file presenti, bisogna assicurarsi di verificare quant
 - Controlla che i **percorsi dei file** specificati negli script siano corretti e accessibili.
 
 Ignorare questi dettagli potrebbe causare il fallimento dei test o risultati non validi.
-
-## Come iniziare
-
-1. Clona questa repository:
-   ```bash
-   git clone https://github.com/federico53/Thesis_WebRTC.git
