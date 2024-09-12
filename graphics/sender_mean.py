@@ -35,6 +35,10 @@ mean_sender_data_per_second = all_sender_data[sender_numeric_cols].groupby(all_s
 cpu_numeric_cols = all_cpu_data.select_dtypes(include=np.number).columns
 mean_cpu_data_per_second = all_cpu_data[cpu_numeric_cols].groupby(all_cpu_data.index).mean()
 
+# Convertire RSS e VMS da byte a gigabyte
+all_cpu_data['RSS'] = all_cpu_data['RSS'] / (1024 ** 3)
+all_cpu_data['VMS'] = all_cpu_data['VMS'] / (1024 ** 3)
+
 # Mostrare le prime righe del DataFrame aggregato
 print(mean_sender_data_per_second.head())
 print(mean_cpu_data_per_second.head())
@@ -46,10 +50,10 @@ sender_metrics_to_plot = [
 ]
 
 cpu_metrics_to_plot = [
-    'CPU Percent', 
-    'RSS', 
+    'CPU %', 
+    'RSS (GB)', 
     'User', 
-    'VMS', 
+    'VMS (GB)', 
     'System'
 ]
 
@@ -59,7 +63,7 @@ plt.figure(figsize=(12, 14))
 
 for i, metric in enumerate(cpu_metrics_to_plot, 1):
     plt.subplot(3, 2, i)
-    plt.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second[metric], marker='o')
+    plt.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second[metric.split(' ')[0]], marker='o')
     plt.title(f'Mean {metric} per Second')
     plt.xlabel('Secondi')
     plt.ylabel(metric)

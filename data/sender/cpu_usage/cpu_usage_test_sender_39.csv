@@ -1,4 +1,4 @@
-CPU Percent,RSS,VMS,User,System,Children User,Children System
+CPU,RSS,VMS,User,System,Children User,Children System
 2.0,119341056,34854694912,0.08,0.1,0.0,0.0
 0.0,119341056,34854694912,0.08,0.1,0.0,0.0
 0.0,119341056,34854694912,0.08,0.1,0.0,0.0
