@@ -1,5 +1,6 @@
 
 const IP = '192.168.56.212';
+const duration = 41000;
 
 let peerConnection;
 
@@ -58,7 +59,7 @@ let createAnswer = async (offer) => {
     setTimeout(() => {
         clearInterval(statsInterval);
         downloadCsv();
-    }, 41000);
+    }, duration);
 }
 
 

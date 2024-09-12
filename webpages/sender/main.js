@@ -1,5 +1,7 @@
 
 const IP = '192.168.56.212';
+const PORT = '8080';
+const duration = 41000;
 
 let peerConnection;
 let localStream;
@@ -7,7 +9,7 @@ let localStream;
 const ws = new WebSocket(`ws:${IP}:8080`);
 
 const localVideo = document.getElementById('user-1');
-localVideo.src = `http://${IP}:8000/media/1.mp4`;
+localVideo.src = `http://${IP}:${PORT}/media/1.mp4`;
 
 if(peerConnection){
     peerConnection.close();
@@ -77,7 +79,7 @@ let addAnswer = async (answer) => {
     setTimeout(() => {
         clearInterval(statsInterval);
         downloadCsv();
-    }, 41000);
+    }, duration);
 }
 
 ws.onmessage = (event) => {
