@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Percorso ai file CSV (modifica il percorso se necessario)
-receiver_path = "/home/federico/Documents/Tesi/Risultati/receiver2/communication/test_receiver_*.csv"
-cpu_path = "/home/federico/Documents/Tesi/Risultati/receiver2/cpu_usage/cpu_usage_test_receiver_*.csv"
+receiver_path = "./data/receiver60/communication/test_receiver_*.csv"
+cpu_path = "./data/receiver60/cpu_usage/cpu_usage_test_receiver_*.csv"
 
 # Lista per memorizzare i DataFrame di ogni test
 receiver_data_frames = []

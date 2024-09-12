@@ -5,8 +5,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Percorso ai file CSV (modifica il percorso se necessario)
-sender_path = "/home/federico/Documents/Tesi/Risultati/sender2/communication/test_sender_*.csv"
-cpu_path = "/home/federico/Documents/Tesi/Risultati/sender2/cpu_usage/cpu_usage_test_sender_*.csv"
+sender_path = "./data/sender60/communication/test_sender_*.csv"
+cpu_path = "./data/sender60/cpu_usage/cpu_usage_test_sender_*.csv"
+
+N = 60
 
 # Lista per memorizzare i DataFrame di ogni test
 sender_data_frames = []
@@ -128,7 +130,7 @@ plt.title('Total Packet Send Delay vs. Huge Frames Sent')
 plt.grid(True)
 
 # calcolare il ritardo medio di invio dei pacchetti
-average_packet_send_delay = mean_sender_data_per_second['totalPacketSendDelay'].max()/40
+average_packet_send_delay = mean_sender_data_per_second['totalPacketSendDelay'].max()/N
 print(f'Average Total Packet Send Delay: {average_packet_send_delay:.2f} seconds')
 
 plt.tight_layout()
