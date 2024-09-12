@@ -28,6 +28,14 @@ for file in glob.glob(cpu_path):
 all_sender_data = pd.concat(sender_data_frames, axis=0)
 all_cpu_data = pd.concat(cpu_data_frames, axis=0)
 
+# Convertire RSS e VMS da byte a gigabyte
+all_cpu_data['RSS'] = all_cpu_data['RSS'] / (1024 ** 3)
+all_cpu_data['VMS'] = all_cpu_data['VMS'] / (1024 ** 3)
+
+# Convertire bytesSent e headerBytesSent da byte a kilobyte
+all_sender_data['bytesSent'] = all_sender_data['bytesSent'] / (1024)
+all_sender_data['headerBytesSent'] = all_sender_data['headerBytesSent'] / (1024)
+
 # Calcolare la media per ciascun secondo aggregando per l'indice (che rappresenta il tempo)
 sender_numeric_cols = all_sender_data.select_dtypes(include=np.number).columns
 mean_sender_data_per_second = all_sender_data[sender_numeric_cols].groupby(all_sender_data.index).mean()
@@ -35,17 +43,24 @@ mean_sender_data_per_second = all_sender_data[sender_numeric_cols].groupby(all_s
 cpu_numeric_cols = all_cpu_data.select_dtypes(include=np.number).columns
 mean_cpu_data_per_second = all_cpu_data[cpu_numeric_cols].groupby(all_cpu_data.index).mean()
 
-# Convertire RSS e VMS da byte a gigabyte
-all_cpu_data['RSS'] = all_cpu_data['RSS'] / (1024 ** 3)
-all_cpu_data['VMS'] = all_cpu_data['VMS'] / (1024 ** 3)
-
 # Mostrare le prime righe del DataFrame aggregato
 print(mean_sender_data_per_second.head())
 print(mean_cpu_data_per_second.head())
 
+# Calcolare la differenza tra i valori successivi per le metriche totali
+metrics_to_transform = ['User', 'System']
+
+for metric in metrics_to_transform:
+    mean_cpu_data_per_second[metric] = mean_cpu_data_per_second[metric].diff().fillna(0)
+
+metrics_to_transform = ['bytesSent', 'totalEncodeTime', 'headerBytesSent', 'packetsSent', 'retransmittedPacketsSent']
+
+for metric in metrics_to_transform:
+    mean_sender_data_per_second[metric] = mean_sender_data_per_second[metric].diff().fillna(0)
+
 # Selezione delle metriche chiave per la visualizzazione
 sender_metrics_to_plot = [
-    'bytesSent',
+    'bytesSent (KB)',
     'framesPerSecond'
 ]
 
@@ -64,7 +79,7 @@ plt.figure(figsize=(12, 14))
 for i, metric in enumerate(cpu_metrics_to_plot, 1):
     plt.subplot(3, 2, i)
     plt.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second[metric.split(' ')[0]], marker='o')
-    plt.title(f'Mean {metric} per Second')
+    plt.title(f'Mean {metric.split(' ')[0]} per Second')
     plt.xlabel('Secondi')
     plt.ylabel(metric)
     plt.grid(True)
@@ -90,8 +105,8 @@ plt.figure(figsize=(15, 10))
 
 for i, metric in enumerate(sender_metrics_to_plot, 1):
     plt.subplot(2, 2, i)
-    plt.plot(mean_sender_data_per_second.index, mean_sender_data_per_second[metric], marker='o')
-    plt.title(f'Mean {metric} per Second')
+    plt.plot(mean_sender_data_per_second.index, mean_sender_data_per_second[metric.split(' ')[0]], marker='o')
+    plt.title(f'Mean {metric.split(' ')[0]} per Second')
     plt.xlabel('Secondi')
     plt.ylabel(metric)
     plt.grid(True)
@@ -188,7 +203,7 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
-# Dual-Axis Line Chart: Frames Per Second vs. CPU Percent
+# Dual-Axis Line Chart: Frames Per Second vs. CPU PercentPercent
 plt.figure(figsize=(12, 6))
 
 plt.subplot(2, 1, 1)
@@ -201,18 +216,18 @@ ax1.tick_params(axis='y', labelcolor='b')
 
 # Secondo asse y per CPU Percent
 ax2 = ax1.twinx()
-ax2.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second['CPU Percent'], color='r', label='CPU Percent')
-ax2.set_ylabel('CPU Percent (%)', color='r')
+ax2.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second['CPU'], color='r', label='CPU %')
+ax2.set_ylabel('CPU (%)', color='r')
 ax2.tick_params(axis='y', labelcolor='r')
 
 # Aggiungi legende e titolo
 ax1.legend(loc='upper left')
 ax2.legend(loc='upper right')
-plt.title('Frames Per Second and CPU Percent Over Time')
+plt.title('Frames Per Second and CPU % Over Time')
 plt.grid(True)
 
 # Calcolare la velocità in bit/s
-mean_sender_data_per_second['bitsPerSecond'] = mean_sender_data_per_second['bytesSent'].diff() * 8
+mean_sender_data_per_second['bitsPerSecond'] = mean_sender_data_per_second['bytesSent'] * 8
 mean_sender_data_per_second = mean_sender_data_per_second.dropna(subset=['bitsPerSecond'])
 
 # Line plot per la velocità in bit/s
