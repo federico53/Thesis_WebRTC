@@ -1,6 +1,6 @@
 
-const IP = '192.168.56.212';
-const PORT = '8080';
+const IP = 'localhost';
+const PORT = '8000';
 const duration = 41000;
 
 let peerConnection;
@@ -9,7 +9,7 @@ let localStream;
 const ws = new WebSocket(`ws:${IP}:8080`);
 
 const localVideo = document.getElementById('user-1');
-localVideo.src = `http://${IP}:${PORT}/media/1.mp4`;
+localVideo.src = `http://${IP}:${PORT}/webpages/1.mp4`;
 
 if(peerConnection){
     peerConnection.close();

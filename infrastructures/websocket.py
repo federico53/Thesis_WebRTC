@@ -3,6 +3,7 @@ import websockets
 import json
 
 connected_clients = set()
+IP = "localhost"
 
 async def handler(websocket, path):
     # Aggiunge il nuovo client connesso alla lista dei client
@@ -40,12 +41,12 @@ async def main():
     # Imposta il timeout per il ping keepalive a 60 secondi
     server = await websockets.serve(
         handler,
-        "192.168.56.212",
+        IP,
         8080,
         ping_interval=60,  # Intervallo di 60 secondi tra i ping
         ping_timeout=60    # Timeout di 60 secondi per il ping
     )
-    print('Server WebSocket in ascolto su ws://192.168.56.212:8080')
+    print(f'Server WebSocket in ascolto su ws://{IP}:8080')
     await server.wait_closed()
 
 asyncio.run(main())

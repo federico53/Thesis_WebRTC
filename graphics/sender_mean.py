@@ -53,7 +53,7 @@ metrics_to_transform = ['User', 'System']
 for metric in metrics_to_transform:
     mean_cpu_data_per_second[metric] = mean_cpu_data_per_second[metric].diff().fillna(0)
 
-metrics_to_transform = ['bytesSent', 'totalEncodeTime', 'headerBytesSent', 'packetsSent', 'retransmittedPacketsSent']
+metrics_to_transform = ['bytesSent', 'totalEncodeTime', 'totalPacketSendDelay', 'hugeFramesSent','headerBytesSent', 'packetsSent', 'retransmittedPacketsSent']
 
 for metric in metrics_to_transform:
     mean_sender_data_per_second[metric] = mean_sender_data_per_second[metric].diff().fillna(0)
@@ -72,27 +72,61 @@ cpu_metrics_to_plot = [
     'System'
 ]
 
+# Imposta dimensione globale del font
+plt.rcParams['font.size'] = 14 
+
 # ------------------------ CPU -------------------------------
 # Generazione dei grafici temporali per ciascuna metrica aggregata
 plt.figure(figsize=(12, 14))
 
-for i, metric in enumerate(cpu_metrics_to_plot, 1):
-    plt.subplot(3, 2, i)
-    plt.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second[metric.split(' ')[0]], marker='o')
-    plt.title(f'Mean {metric.split(' ')[0]} per Second')
-    plt.xlabel('Secondi')
-    plt.ylabel(metric)
-    plt.grid(True)
-
-
-plt.subplot(3, 2, 6)
-plt.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second['Children User'], marker='o', label='Children User')
-plt.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second['Children System'], marker='o', label='Children System')
-plt.title(f'Mean Children User & System per Second')
+plt.subplot(2, 2, 1)
+plt.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second['CPU'], marker='o')
+plt.title('Mean CPU % per Second')
 plt.xlabel('Secondi')
-plt.ylabel('Children User & System')
+plt.ylabel("CPU %")
+plt.grid(True)
+
+plt.subplot(2, 2, 2)
+plt.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second['RSS'], marker='o')
+plt.title('Mean RSS per Second')
+plt.xlabel('Secondi')
+plt.ylabel('RSS')
+plt.grid(True)
+
+plt.subplot(2, 2, 3)
+plt.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second['System'], marker='o', label='System')
+plt.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second['User'], marker='o', label='User')
+plt.title('Mean System & User per Second')
+plt.xlabel('Secondi')
+plt.ylabel("Time (s)")
 plt.legend(loc='upper left')
 plt.grid(True)
+
+plt.subplot(2, 2, 4)
+plt.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second['VMS'], marker='o')
+plt.title('Mean VMS per Second')
+plt.xlabel('Secondi')
+plt.ylabel('VMS')
+plt.grid(True)
+
+
+# for i, metric in enumerate(cpu_metrics_to_plot, 1):
+#     plt.subplot(3, 2, i)
+#     plt.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second[metric.split(' ')[0]], marker='o')
+#     plt.title(f'Mean {metric.split(' ')[0]} per Second')
+#     plt.xlabel('Secondi')
+#     plt.ylabel(metric)
+#     plt.grid(True)
+
+
+# plt.subplot(3, 2, 6)
+# plt.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second['Children User'], marker='o', label='Children User')
+# plt.plot(mean_cpu_data_per_second.index, mean_cpu_data_per_second['Children System'], marker='o', label='Children System')
+# plt.title(f'Mean Children User & System per Second')
+# plt.xlabel('Secondi')
+# plt.ylabel('Children User & System')
+# plt.legend(loc='upper left')
+# plt.grid(True)
 
 # Impostare i margini e lo spazio verticale tra i subplot
 plt.subplots_adjust(left=0.07, bottom=0.05, right=0.97, top=0.97, hspace=0.35)
@@ -111,94 +145,114 @@ for i, metric in enumerate(sender_metrics_to_plot, 1):
     plt.ylabel(metric)
     plt.grid(True)
 
+### DA RIVEDERE ---------------------------------------------------------
+# # Total Encode Time e Total Packet Send Delay
 
-# Total Encode Time e Total Packet Send Delay
+# plt.subplot(2, 2, 3)
+# plt.plot(mean_sender_data_per_second.index, mean_sender_data_per_second['totalEncodeTime'], marker='o', color='blue', label='Total Encode Time')
+# plt.plot(mean_sender_data_per_second.index, mean_sender_data_per_second['totalPacketSendDelay'], marker='o', color='orange', label='Total Packet Send Delay')
+# plt.title('Mean Encode Time and Processing Delay per Second')
+# plt.xlabel('Secondi')
+# plt.ylabel('Time (s)')
+# plt.legend()
+# plt.grid(True)
 
-plt.subplot(2, 2, 3)
-plt.plot(mean_sender_data_per_second.index, mean_sender_data_per_second['totalEncodeTime'], marker='o', color='blue', label='Total Encode Time')
-plt.plot(mean_sender_data_per_second.index, mean_sender_data_per_second['totalPacketSendDelay'], marker='o', color='orange', label='Total Packet Send Delay')
-plt.title('Mean Encode Time and Processing Delay per Second')
-plt.xlabel('Secondi')
-plt.ylabel('Time (s)')
-plt.legend()
+# # Scatter Plot: Total Packet Send Delay vs. Huge Frames Sent
+
+# plt.subplot(2, 2, 4)
+# plt.scatter(
+#     mean_sender_data_per_second['totalPacketSendDelay'],
+#     mean_sender_data_per_second['hugeFramesSent'],
+#     alpha=0.5, 
+#     c='blue'
+# )
+
+# # Aggiungere una linea di regressione
+# sns.regplot(
+#     x='totalPacketSendDelay',
+#     y='hugeFramesSent',
+#     data=mean_sender_data_per_second,
+#     scatter=False,
+#     color='red'
+# )
+
+# plt.xlabel('Total Packet Send Delay (s)')
+# plt.ylabel('Huge Frames Sent')
+# plt.title('Total Packet Send Delay vs. Huge Frames Sent')
+# plt.grid(True)
+
+# # calcolare il ritardo medio di invio dei pacchetti
+# average_packet_send_delay = mean_sender_data_per_second['totalPacketSendDelay'].max()/N
+# print(f'Average Total Packet Send Delay: {average_packet_send_delay:.2f} seconds')
+
+# ### ---------------------------------------------------------------------
+
+# plt.tight_layout()
+# plt.show()
+
+
+
+# # Grafico per confrontare headerBytesSent con bytesSent
+# plt.figure(figsize=(12, 6))
+
+# plt.subplot(1, 2, 1)
+
+# plt.bar(mean_sender_data_per_second.index, mean_sender_data_per_second['bytesSent'], label='Total Bytes Sent')
+# plt.bar(mean_sender_data_per_second.index, mean_sender_data_per_second['headerBytesSent'], label='Header Bytes Sent')
+
+# # Calcolare la percentuale di overhead
+# mean_sender_data_per_second['headerOverheadPercent'] = (mean_sender_data_per_second['headerBytesSent'] / mean_sender_data_per_second['bytesSent']) * 100
+# average_overhead_percent = mean_sender_data_per_second['headerOverheadPercent'].mean()
+
+# # Aggiungere una annotazione per la media della percentuale di overhead
+# plt.annotate(f'Avg Header Overhead: {average_overhead_percent:.2f}%', xy=(0.5, 0.95), xycoords='axes fraction', fontsize=12, color='green')
+# print(f'Average Header Overhead: {average_overhead_percent:.2f}%')
+
+# plt.title('Comparison of Header Bytes vs Total Bytes Sent')
+# plt.xlabel('Secondi')
+# plt.ylabel('Bytes')
+# plt.legend(loc='upper left')
+# plt.grid(True)
+
+
+# # Grafico per confrontare packetsSent con retransmittedPackets
+# plt.subplot(1, 2, 2)
+
+# plt.bar(mean_sender_data_per_second.index, mean_sender_data_per_second['packetsSent'], label='Total Packets Sent')
+# plt.bar(mean_sender_data_per_second.index, mean_sender_data_per_second['retransmittedPacketsSent'], label='Retransmitted Packets')
+
+# # Calcolare la percentuale di pacchetti ritrasmessi
+# mean_sender_data_per_second['retransmitPercent'] = (mean_sender_data_per_second['retransmittedPacketsSent'] / mean_sender_data_per_second['packetsSent']) * 100
+# average_retransmit_percent = mean_sender_data_per_second['retransmitPercent'].mean()
+
+# # Aggiungere una annotazione per la media della percentuale di pacchetti ritrasmessi
+# plt.annotate(f'Avg Retransmit Percent: {average_retransmit_percent:.2f}%', xy=(0.5, 0.95), xycoords='axes fraction', fontsize=12, color='green')
+# print(f'Average Retransmit Percent: {average_retransmit_percent:.2f}%')
+
+# plt.title('Comparison of Total Packets vs Retransmitted Packets')
+# plt.xlabel('Secondi')
+# plt.ylabel('Packets')
+# plt.legend(loc='upper left')
+# plt.grid(True)
+
+# plt.tight_layout()
+# plt.show()
+
+# Calcolare la velocità in bit/s
+mean_sender_data_per_second['bitsPerSecond'] = mean_sender_data_per_second['bytesSent'] * 8
+mean_sender_data_per_second = mean_sender_data_per_second.dropna(subset=['bitsPerSecond'])
+
+# Line plot per la velocità in bit/s
+plt.subplot(2, 2, (3, 4))
+plt.plot(mean_sender_data_per_second.index, mean_sender_data_per_second['bitsPerSecond'], color='purple')
+plt.title('Bitrate Over Time')
+plt.xlabel('Time (s)')
+plt.ylabel('Bitrate (bit/s)')
 plt.grid(True)
 
-
-# Scatter Plot: Total Packet Send Delay vs. Huge Frames Sent
-
-plt.subplot(2, 2, 4)
-plt.scatter(
-    mean_sender_data_per_second['totalPacketSendDelay'],
-    mean_sender_data_per_second['hugeFramesSent'],
-    alpha=0.5, 
-    c='blue'
-)
-
-# Aggiungere una linea di regressione
-sns.regplot(
-    x='totalPacketSendDelay',
-    y='hugeFramesSent',
-    data=mean_sender_data_per_second,
-    scatter=False,
-    color='red'
-)
-
-plt.xlabel('Total Packet Send Delay (s)')
-plt.ylabel('Huge Frames Sent')
-plt.title('Total Packet Send Delay vs. Huge Frames Sent')
-plt.grid(True)
-
-# calcolare il ritardo medio di invio dei pacchetti
-average_packet_send_delay = mean_sender_data_per_second['totalPacketSendDelay'].max()/N
-print(f'Average Total Packet Send Delay: {average_packet_send_delay:.2f} seconds')
-
-plt.tight_layout()
-plt.show()
-
-
-
-# Grafico per confrontare headerBytesSent con bytesSent
-plt.figure(figsize=(12, 6))
-
-plt.subplot(1, 2, 1)
-
-plt.bar(mean_sender_data_per_second.index, mean_sender_data_per_second['bytesSent'], label='Total Bytes Sent')
-plt.bar(mean_sender_data_per_second.index, mean_sender_data_per_second['headerBytesSent'], label='Header Bytes Sent')
-
-# Calcolare la percentuale di overhead
-mean_sender_data_per_second['headerOverheadPercent'] = (mean_sender_data_per_second['headerBytesSent'] / mean_sender_data_per_second['bytesSent']) * 100
-average_overhead_percent = mean_sender_data_per_second['headerOverheadPercent'].mean()
-
-# Aggiungere una annotazione per la media della percentuale di overhead
-plt.annotate(f'Avg Header Overhead: {average_overhead_percent:.2f}%', xy=(0.5, 0.95), xycoords='axes fraction', fontsize=12, color='green')
-print(f'Average Header Overhead: {average_overhead_percent:.2f}%')
-
-plt.title('Comparison of Header Bytes vs Total Bytes Sent')
-plt.xlabel('Secondi')
-plt.ylabel('Bytes')
-plt.legend(loc='upper left')
-plt.grid(True)
-
-
-# Grafico per confrontare packetsSent con retransmittedPackets
-plt.subplot(1, 2, 2)
-
-plt.bar(mean_sender_data_per_second.index, mean_sender_data_per_second['packetsSent'], label='Total Packets Sent')
-plt.bar(mean_sender_data_per_second.index, mean_sender_data_per_second['retransmittedPacketsSent'], label='Retransmitted Packets')
-
-# Calcolare la percentuale di pacchetti ritrasmessi
-mean_sender_data_per_second['retransmitPercent'] = (mean_sender_data_per_second['retransmittedPacketsSent'] / mean_sender_data_per_second['packetsSent']) * 100
-average_retransmit_percent = mean_sender_data_per_second['retransmitPercent'].mean()
-
-# Aggiungere una annotazione per la media della percentuale di pacchetti ritrasmessi
-plt.annotate(f'Avg Retransmit Percent: {average_retransmit_percent:.2f}%', xy=(0.5, 0.95), xycoords='axes fraction', fontsize=12, color='green')
-print(f'Average Retransmit Percent: {average_retransmit_percent:.2f}%')
-
-plt.title('Comparison of Total Packets vs Retransmitted Packets')
-plt.xlabel('Secondi')
-plt.ylabel('Packets')
-plt.legend(loc='upper left')
-plt.grid(True)
+average_bitrate = mean_sender_data_per_second['bitsPerSecond'].mean()
+plt.annotate(f'Avg Bitrate: {average_bitrate:.2f} bit/s', xy=(0.5, 0.75), xycoords='axes fraction', fontsize=12, color='green')
+print(f'Average Bitrate: {average_bitrate:.2f} bit/s')
 
 plt.tight_layout()
 plt.show()
@@ -206,7 +260,7 @@ plt.show()
 # Dual-Axis Line Chart: Frames Per Second vs. CPU PercentPercent
 plt.figure(figsize=(12, 6))
 
-plt.subplot(2, 1, 1)
+# plt.subplot(2, 1, 1)
 # Primo asse y per Frames Per Second
 ax1 = plt.gca()
 ax1.plot(mean_sender_data_per_second.index, mean_sender_data_per_second['framesPerSecond'], color='b', label='Frames Per Second')
@@ -226,29 +280,13 @@ ax2.legend(loc='upper right')
 plt.title('Frames Per Second and CPU % Over Time')
 plt.grid(True)
 
-# Calcolare la velocità in bit/s
-mean_sender_data_per_second['bitsPerSecond'] = mean_sender_data_per_second['bytesSent'] * 8
-mean_sender_data_per_second = mean_sender_data_per_second.dropna(subset=['bitsPerSecond'])
-
-# Line plot per la velocità in bit/s
-plt.subplot(2, 1, 2)
-plt.plot(mean_sender_data_per_second.index, mean_sender_data_per_second['bitsPerSecond'], color='purple')
-plt.title('Bitrate Over Time')
-plt.xlabel('Time (s)')
-plt.ylabel('Bitrate (bit/s)')
-plt.grid(True)
-
-average_bitrate = mean_sender_data_per_second['bitsPerSecond'].mean()
-plt.annotate(f'Avg Bitrate: {average_bitrate:.2f} bit/s', xy=(0.5, 0.95), xycoords='axes fraction', fontsize=12, color='green')
-print(f'Average Bitrate: {average_bitrate:.2f} bit/s')
-
 plt.tight_layout()
 plt.show()
 
 
-# # Correlation Matrix
-# plt.figure(figsize=(10, 6))
-# corr = mean_sender_data_per_second.corr()
-# sns.heatmap(corr, annot=True, cmap='coolwarm', fmt='.2f', linewidths=.5)
-# plt.title('Correlation Matrix')
-# plt.show()
+# # # Correlation Matrix
+# # plt.figure(figsize=(10, 6))
+# # corr = mean_sender_data_per_second.corr()
+# # sns.heatmap(corr, annot=True, cmap='coolwarm', fmt='.2f', linewidths=.5)
+# # plt.title('Correlation Matrix')
+# # plt.show()

@@ -1,5 +1,5 @@
 
-const IP = '192.168.56.212';
+const IP = 'localhost';
 const duration = 41000;
 
 let peerConnection;
@@ -116,7 +116,9 @@ let index;
 
 function reportToCsv(report, index) {
   const values = Object.values(report);
-  values[index] = values[index].replace(/,/g, ' ');
+  if (typeof values[index] === 'string') {
+    values[index] = values[index].replace(/,/g, ' ');
+  }
   const csvRow = values.join(',');
   return `${csvRow}`;
 }
